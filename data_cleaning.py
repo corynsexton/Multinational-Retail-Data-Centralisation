@@ -1,5 +1,4 @@
-# Methods to clean data from each of the data sources
-# .astype() lets you convert a column to a new data type as and takes data type as an argument
+# METHODS TO CLEAN DATA FROM EACH OF THE DATA SOURCES
 
 import pandas as pd
 import numpy as np

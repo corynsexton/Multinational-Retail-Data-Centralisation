@@ -36,7 +36,7 @@ class DatabaseConnector():
         for table_name in inspector.get_table_names():
                 print(table_name)
 
-
+    
    # READS LOACL DATABASE CREDS             
     def read_local_db_creds(self):               
         with open('local_db_creds.yaml', 'r') as f:

@@ -1,4 +1,4 @@
-# Methods extract data from different data sources such as CSV files, an API and an S3 bucket
+# METHODS EXTRACT DATA FROM DIFFERENT DATA SOURCES SUCH AS CSV FILES, AN API AND AN AWS S3 BUCKET
 
 import pandas as pd
 from database_utils import db_connector
