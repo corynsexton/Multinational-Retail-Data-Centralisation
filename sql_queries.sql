@@ -1,11 +1,13 @@
 -- 1. How many stores does the business have and in which countries?
-SELECT country_code, COUNT(*) AS total_no_stores
+SELECT 	country_code, 
+		COUNT(*) AS total_no_stores
 FROM dim_store_details
 GROUP BY country_code
 ORDER BY total_no_stores DESC;
 
 -- 2. Which locations currently have the most stores?
-SELECT locality, COUNT(*) AS total_no_stores
+SELECT 	locality, 
+		COUNT(*) AS total_no_stores
 FROM dim_store_details
 GROUP BY locality
 ORDER BY total_no_stores DESC
@@ -18,7 +20,7 @@ FROM orders_table
 JOIN dim_date_times
  	ON dim_date_times.date_uuid = orders_table.date_uuid
 JOIN dim_products
-	ON dim_products.product_code = orders_table.product_code
+	ON 	dim_products.product_code = orders_table.product_code
 GROUP BY dim_date_times.month
 ORDER BY total_sales_£ DESC
 LIMIT 6;
@@ -38,28 +40,28 @@ GROUP BY location
 ORDER BY location DESC;
 
 -- 5. What percentage of sales come through each type of store?
-SELECT 	dim_store_details.store_type,
-		ROUND(SUM(orders_table.product_quantity * dim_products.product_price_£)::numeric, 2) AS "total_sales (£)",
-		CAST((SUM(orders_table.product_quantity * dim_products.product_price_£) / 
-    		SUM(SUM(orders_table.product_quantity * dim_products.product_price_£)) OVER ()) * 100 AS NUMERIC(10, 2)) AS "percentage_total (%)"
-FROM orders_table 
-JOIN dim_store_details
-	ON dim_store_details.store_code = orders_table.store_code
-JOIN dim_products
-	ON dim_products.product_code = orders_table.product_code
+SELECT 	ds.store_type,
+		ROUND(SUM(ot.product_quantity * dp.product_price_£)::numeric, 2) AS "total_sales (£)",
+		CAST((SUM(ot.product_quantity * dp.product_price_£) / 
+    		SUM(SUM(ot.product_quantity * dp.product_price_£)) OVER ()) * 100 AS NUMERIC(10, 2)) AS "percentage_total (%)"
+FROM orders_table AS ot
+JOIN dim_store_details AS ds
+	ON ds.store_code = ot.store_code
+JOIN dim_products AS dp
+	ON dp.product_code = ot.product_code
 GROUP BY store_type
 ORDER BY "total_sales (£)" DESC;
 
 -- 6. Which month in each year produced the highest cost of sales?
-SELECT	ROUND(SUM(orders_table.product_quantity * dim_products.product_price_£)::numeric, 2) AS "total_sales (£)",
-		dim_date_times.year,
-		dim_date_times.month
-FROM dim_date_times
-JOIN orders_table
-	ON orders_table.date_uuid = dim_date_times.date_uuid
-JOIN dim_products
-	ON dim_products.product_code = orders_table.product_code
-GROUP BY dim_date_times.year, dim_date_times.month
+SELECT	ROUND(SUM(ot.product_quantity * dp.product_price_£)::numeric, 2) AS "total_sales (£)",
+		dt.year,
+		dt.month
+FROM dim_date_times dt
+JOIN orders_table ot
+	ON ot.date_uuid = dt.date_uuid
+JOIN dim_products dp
+	ON dp.product_code = ot.product_code
+GROUP BY dt.year, dt.month
 ORDER BY "total_sales (£)" DESC;
 
 -- 7. What is the staff headcount?
@@ -71,17 +73,17 @@ GROUP BY country_code
 ORDER BY total_staff_numbers DESC;
 
 -- 8. Which German store type is selling the most?
-SELECT 	dim_store_details.country_code,
-		dim_store_details.store_type,
-		ROUND(SUM(orders_table.product_quantity * dim_products.product_price_£)::numeric, 2) AS "total_sales (£)"
-FROM dim_store_details
-JOIN orders_table
-	ON orders_table.store_code = dim_store_details.store_code
-JOIN dim_products
-	ON dim_products.product_code = orders_table.product_code
+SELECT 	ds.country_code,
+		ds.store_type,
+		ROUND(SUM(ot.product_quantity * dp.product_price_£)::numeric, 2) AS "total_sales (£)"
+FROM dim_store_details ds
+JOIN orders_table ot
+	ON ot.store_code = ds.store_code
+JOIN dim_products dp
+	ON dp.product_code = ot.product_code
 WHERE country_code = 'DE'
-GROUP BY dim_store_details.store_type,
-		 dim_store_details.country_code
+GROUP BY ds.store_type,
+		 ds.country_code
 ORDER BY "total_sales (£)" DESC;
 
 -- 9. How quickly is the company making sales?
@@ -125,4 +127,4 @@ SELECT	year,
 FROM time_difference
 GROUP BY year, 
 		 actual_time_difference
-ORDER BY actual_time_difference DESC;
+ORDER BY actual_time_difference;

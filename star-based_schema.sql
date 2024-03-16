@@ -16,7 +16,7 @@ ALTER TABLE dim_users
 	ALTER COLUMN user_uuid TYPE UUID USING user_uuid::uuid,
 	ALTER COLUMN join_date TYPE DATE USING join_date::date
 
--- -- Alter store data column types
+-- Alter store data column types
 ALTER TABLE dim_store_details
 	ALTER COLUMN longitude TYPE FLOAT,
 	ALTER COLUMN locality TYPE VARCHAR(255),
@@ -28,7 +28,7 @@ ALTER TABLE dim_store_details
 	ALTER COLUMN country_code TYPE VARCHAR(2),
 	ALTER COLUMN continent TYPE VARCHAR(255);
 
---Alter products data column types and categorise weight column
+-- Alter products data column types and categorise weight column
 ALTER TABLE dim_products
 	ADD COLUMN weight_class VARCHAR(14)
 
@@ -53,7 +53,7 @@ ALTER TABLE dim_products
 	ALTER COLUMN uuid TYPE UUID USING uuid::uuid
 
 ALTER TABLE dim_products
-	ALTER COLUMN still_available TYPE bool USING 
+	ALTER COLUMN still_available TYPE BOOL USING 
 	CASE 
 		WHEN still_available = 'Removed'THEN FALSE
 		WHEN still_available = 'Still_available' THEN TRUE
