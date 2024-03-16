@@ -1,8 +1,7 @@
 # CONNECT AND UPLOAD DATA TO THE DATABASE
 
-import yaml
 from sqlalchemy import create_engine, inspect
-
+import yaml
 
 class DatabaseConnector():
 
@@ -16,15 +15,15 @@ class DatabaseConnector():
     def init_db_engine(self):
         db_creds = self.read_db_creds()
 
-        self.db_type = 'postgresql'
-        self.db_api = 'psycopg2'
-        self.db_host = db_creds['RDS_HOST']
-        self.db_password = db_creds['RDS_PASSWORD']       
-        self.db_user = db_creds['RDS_USER']
-        self.db_database = db_creds['RDS_DATABASE']
-        self.db_port = db_creds['RDS_PORT']
+        db_type = 'postgresql'
+        db_api = 'psycopg2'
+        db_host = db_creds['RDS_HOST']
+        db_password = db_creds['RDS_PASSWORD']       
+        db_user = db_creds['RDS_USER']
+        db_database = db_creds['RDS_DATABASE']
+        db_port = db_creds['RDS_PORT']
         
-        engine = create_engine(f"{self.db_type}+{self.db_api}://{self.db_user}:{self.db_password}@{self.db_host}/{self.db_database}")
+        engine = create_engine(f"{db_type}+{db_api}://{db_user}:{db_password}@{db_host}/{db_database}")
         return engine
 
     
@@ -35,9 +34,9 @@ class DatabaseConnector():
         
         for table_name in inspector.get_table_names():
                 print(table_name)
-
+        print(table_name)
     
-   # READS LOACL DATABASE CREDS             
+   # READS LOCAL DATABASE CREDENTIALS           
     def read_local_db_creds(self):               
         with open('local_db_creds.yaml', 'r') as f:
             read_local_db_creds = yaml.safe_load(f)

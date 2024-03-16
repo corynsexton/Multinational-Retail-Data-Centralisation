@@ -1,16 +1,16 @@
 # METHODS TO CLEAN DATA FROM EACH OF THE DATA SOURCES
 
-import pandas as pd
-import numpy as np
 from data_extraction import db_extractor
+import numpy as np
+import pandas as pd
 import re
 
 class DataCleaning():
 
-    def __init__(self):
-    #    df_legacy_users = db_extractor.read_rds_table('legacy_users')
-    #    df_card_details = db_extractor.retrieve_pdf_data()
-        pass
+    # def __init__(self):
+    #     df_legacy_users = db_extractor.read_rds_table('legacy_users')
+    #     df_card_details = db_extractor.retrieve_pdf_data()
+    #     pass
 
     def clean_user_data(self):
         # EXTRACT TABLE
@@ -19,17 +19,19 @@ class DataCleaning():
         df_legacy_users.set_index('index', inplace = True)
         # SETS COLUMNS TO DATETIME CATEGORY
         df_legacy_users['date_of_birth'] = pd.to_datetime(df_legacy_users['date_of_birth'], errors='coerce')
+        df_legacy_users['date_of_birth'] = df_legacy_users['date_of_birth'].dt.strftime('%Y-%m-%d')
         df_legacy_users['join_date'] = pd.to_datetime(df_legacy_users['join_date'], errors='coerce')
+        df_legacy_users['join_date'] = df_legacy_users['join_date'].dt.strftime('%Y-%m-%d')
         # CORRECTS GB SPELLING AND CHANGES COLUMN TYPE TO CATEGORY
         df_legacy_users['country_code'] = df_legacy_users['country_code'].str.replace('GGB', 'GB')
         df_legacy_users['country_code'] = df_legacy_users['country_code'].astype('category')
         # DROPS NULL ROWS
         df_legacy_users = df_legacy_users.dropna()
         # REMOVES ALL CHARACTERS EXCEPT NUMBERS
-        df_legacy_users['phone_number'] = df_legacy_users['phone_number'].str.replace('[^0-9]+', '')
+        # df_legacy_users['phone_number'] = df_legacy_users['phone_number'].str.replace('[^0-9]+', '')
         # REMOVES COUNTRY CODE
-        df_legacy_users['phone_number'] = df_legacy_users['phone_number'].apply(lambda x: ''.join([i for i in x if str.isnumeric(i)])[-10:])
-       
+        # df_legacy_users['phone_number'] = df_legacy_users['phone_number'].apply(lambda x: ''.join([i for i in x if str.isnumeric(i)])[-10:])
+        # print(df_legacy_users) 
         return df_legacy_users
 
 
@@ -41,14 +43,18 @@ class DataCleaning():
         # CHANGE DATE COLUMNS TO DATETIME & REMOVE TIMESTAMP FROM COLUMN
         df_card_details['date_payment_confirmed'] = pd.to_datetime(df_card_details['date_payment_confirmed'], errors='coerce')
         # SETS DATE TO FORMAT OF CHOICE - REMOVES TIMESTAMP
-        df_card_details['date_payment_confirmed'] = df_card_details['date_payment_confirmed'].dt.strftime('%d/%m/%Y')      
+        df_card_details['date_payment_confirmed'] = df_card_details['date_payment_confirmed'].dt.strftime('%Y-%m-%d')      
+        # REMOVE ANY NON-NUMERIC CHARACTERS FROM COLUMN
+        df_card_details['card_number'] = df_card_details['card_number'].astype(str)
+        df_card_details['card_number'] = df_card_details['card_number'].str.replace('?', '')
         # MAKE SURE CARD DIGITS ARE ALL CORRECT FOR EACH PROVIDER AND REMOVE ANY THAT AREN'T
-        card_providers = {'American Express':[15], 'Mastercard':[16], 'VISA 13 digit':[13], 'VISA 16 digit':[16], 'Diners Club / Carte Blanche':[14], 'VISA 19 digit':[19], 'JCB 16 digit':[16], 'Maestro':range(16-19), 'JCB 15 digit':[15], 'Discover':[16]}
+        card_providers = {'American Express':[15], 'Mastercard':[16], 'VISA 13 digit':[13], 'VISA 16 digit':[16], 'Diners Club / Carte Blanche':[14], 
+                            'VISA 19 digit':[19], 'JCB 16 digit':[16], 'Maestro':range(16-19), 'JCB 15 digit':[15], 'Discover':[16]}
         # SET ANY INCORRECT ROWS TO NAN
         df_card_details['card_provider'] = df_card_details['card_provider'].apply(lambda x : x if x in card_providers else np.NaN) 
         # DROP INCORRECT ROWS
-        df_card_details = df_card_details.dropna()    
-        
+        df_card_details = df_card_details.dropna()
+
         return df_card_details
  
 
@@ -70,20 +76,19 @@ class DataCleaning():
         store_types = ['Mall Kiosk', 'Super Store', 'Local', 'Outlet', 'Web Portal']
         df_store_data['store_type'] = df_store_data['store_type'].apply(lambda x : x if x in store_types else np.NaN)
         # SET TYPE TO CATEGORY
-        category_type = {'continent' : 'category', 'country_code' : 'category', 'store_type' : 'category'}
+        category_type = {'continent':'category', 'country_code':'category', 'store_type':'category'}
         df_store_data = df_store_data.astype(category_type)
         # SET OPENING DATE TO DATETIME % REMOVE TIMESTAMP
         df_store_data['opening_date'] = pd.to_datetime(df_store_data['opening_date'], errors = 'coerce')    # ERRORS = 'COERCE' SETS ANY NON-CONVERTIBLE VALUES TO NAN
-        df_store_data['opening_date'] = df_store_data['opening_date'].dt.strftime('%d/%m/%Y')
+        df_store_data['opening_date'] = df_store_data['opening_date'].dt.strftime('%Y-%m-%d')
         # DROP LAT COLUMN. NO VALID DATA
         df_store_data = df_store_data.drop('lat', axis=1)
         # ROUND LONGITUDE AND LATITUDE COLUMNS
-        df_store_data[['longitude', 'latitude', 'staff_numbers']] = df_store_data[['longitude', 'latitude', 'staff_numbers']].apply(lambda x : round(pd.to_numeric(x, errors = 'coerce'), 2 ))
-        # SET TO INT TYPE
-        df_store_data.dropna(subset = ['staff_numbers'], inplace=True)
-        df_store_data['staff_numbers'] = df_store_data['staff_numbers'].astype('int64')
+        df_store_data[['longitude', 'latitude']] = df_store_data[['longitude', 'latitude']].apply(lambda x : round(pd.to_numeric(x, errors = 'coerce'), 2 ))
         # SET STORE_CODE COLUMN TO PARTICULAR FORMAT USING REGEX
         df_store_data['store_code'] = df_store_data['store_code'].apply(lambda x: x if re.match('^[A-Z]{2,3}-[A-Z0-9]{8}$', str(x)) else np.nan)
+        # REMOVE ANY NON-NUMERIC CHARACTERS FROM COLUMN
+        df_store_data['staff_numbers'] = df_store_data['staff_numbers'].str.extract('([\d.]+)')
         # CLEAN ADDRESS COLUMN - NEED TO REPLACE '\n' WITH ', '
         df_store_data['address'] = df_store_data['address'].replace({'\n':', '}, regex=True)
         # DROP NULL VALUE ROWS
@@ -123,7 +128,7 @@ class DataCleaning():
         # CORRECTS TYPO IN REMOVED CATEGORY COLUMN
         df_products_data['removed'] = df_products_data['removed'].replace('Still_avaliable', 'Still_available')
         # SETS VALID CATEGORIES
-        removed_categories = ['Removed', 'Still_available']     # I STILL WANT TO CORRECT THIS SPELLING ON COLUMN CATEGORY
+        removed_categories = ['Removed', 'Still_available'] 
         df_products_data['removed'] = df_products_data['removed'].apply(lambda x : x if x in removed_categories else np.NaN)
         category_categories = ['pets', 'toys-and-games', 'sports-and-leisure', 'health-and-beauty', 'homeware', 'food-and-drink', 'diy']
         df_products_data['category'] = df_products_data['category'].apply(lambda x: x if x in category_categories else np.NaN)
@@ -132,7 +137,7 @@ class DataCleaning():
         df_products_data = df_products_data.astype(category_types)
         # SETS COLUMN TO DATE_TIME
         df_products_data['date_added'] = pd.to_datetime(df_products_data['date_added'], errors = 'coerce')
-        df_products_data['date_added'] = df_products_data['date_added'].dt.strftime('%d/%m/%Y')
+        df_products_data['date_added'] = df_products_data['date_added'].dt.strftime('%Y-%m-%d')
         # DROP NULL VALUES
         df_products_data.replace('NULL', np.NaN, inplace=True)
         df_products_data = df_products_data.dropna()
@@ -152,7 +157,7 @@ class DataCleaning():
         df_orders_data = df_orders_data.drop(columns = ['first_name', 'last_name', '1', 'level_0'])
         # SETS INDEX 
         df_orders_data.set_index('index', inplace=True)
-    
+
         return df_orders_data
 
 
@@ -166,7 +171,7 @@ class DataCleaning():
         # DROPS NULL VALUES
         df_sales_data.replace('NULL', np.NaN, inplace=True)
         df_sales_data = df_sales_data.dropna()
-        df_sales_data = df_sales_data.astype({'time_period' : 'category', 'month' : 'category', 'year' : int, 'day' : int})
+        df_sales_data = df_sales_data.astype({'time_period':'category', 'month':'category', 'year':int, 'day':int})
       
         return df_sales_data
 
@@ -177,10 +182,9 @@ data_cleaner = DataCleaning()
 # db_connector.init_db_engine()
 # db_connector.list_db_tables()
 
-# CALLING CLEAN_CARD DATA METHOD
+# UPLOAD CLEANED USER DATA TO SALES_DATA
 # cleaned_user_data = data_cleaner.clean_user_data()
 # db_connector.upload_to_db(cleaned_user_data, 'dim_users')
-# data_cleaner.clean_card_data()
 
 # UPLOAD CLEANED CARD DETAILS TO SALES_DATA
 # cleaned_card_data = data_cleaner.clean_card_data()
@@ -197,6 +201,7 @@ data_cleaner = DataCleaning()
 
 # UPLOAD CLEANED ORDERS DATA TO SALES_DATA
 # cleaned_orders_data = data_cleaner.clean_orders_data()
+# cleaned_orders_data
 # db_connector.upload_to_db(cleaned_orders_data, 'orders_table')
 
 # UPLOAD CLEANED SALES DATA
