@@ -1,12 +1,12 @@
 # Multinational Data Centralisation Project
 
 ## Table of Contents
-1. [Introduction](#Introduction)
-2. [Database Connection](#Database-Connection)
-3. [Data Extraction](#Data-Extraction)
-4. [Data Cleaning](#Data-Cleaning)
-5. [Star Schema](#Star-Schema)
-6. [Data Analysis - SQL Queries](#Data-Analysis)
+[1. Introduction](#Introduction)
+[2. Database Connection](#Database-Connection)
+[3. Data Extraction](#Data-Extraction)
+[4. Data Cleaning](#Data-Cleaning)
+[5. Star Schema](#Star-Schema)
+[6. Data Analysis - SQL Queries](#Data-Analysis)
 ____
 ## 1. Introduction
 Imagine you are part of a multinational retail company that sells goods across the globe.
