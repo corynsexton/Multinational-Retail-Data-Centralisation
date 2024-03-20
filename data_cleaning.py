@@ -7,11 +7,6 @@ import re
 
 class DataCleaning():
 
-    # def __init__(self):
-    #     df_legacy_users = db_extractor.read_rds_table('legacy_users')
-    #     df_card_details = db_extractor.retrieve_pdf_data()
-    #     pass
-
     def clean_user_data(self):
         # EXTRACT TABLE
         df_legacy_users = db_extractor.read_rds_table('legacy_users')
@@ -27,11 +22,7 @@ class DataCleaning():
         df_legacy_users['country_code'] = df_legacy_users['country_code'].astype('category')
         # DROPS NULL ROWS
         df_legacy_users = df_legacy_users.dropna()
-        # REMOVES ALL CHARACTERS EXCEPT NUMBERS
-        # df_legacy_users['phone_number'] = df_legacy_users['phone_number'].str.replace('[^0-9]+', '')
-        # REMOVES COUNTRY CODE
-        # df_legacy_users['phone_number'] = df_legacy_users['phone_number'].apply(lambda x: ''.join([i for i in x if str.isnumeric(i)])[-10:])
-        # print(df_legacy_users) 
+
         return df_legacy_users
 
 
@@ -143,9 +134,6 @@ class DataCleaning():
         df_products_data = df_products_data.dropna()
         # RENAME COLUMNS
         df_products_data = df_products_data.rename(columns={'product_price':'product_price_£','weight':'weight_kg'})
-        # CHECKS FOR NON-NUMERIC VALUES IN EAN COLUMN
-        # non_numeric_mask = ~df_products_data['EAN'].str.isnumeric()
-        # print(set(non_numeric_mask))
         
         return df_products_data
     
