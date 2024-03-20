@@ -166,7 +166,6 @@ class DataCleaning():
 
 data_cleaner = DataCleaning() 
 
-
 # CALLING UPLOAD_TO_DB METHOD TO UPLOAD CLEANED DATA TO PGADMIN
 # db_connector.init_db_engine()
 # db_connector.list_db_tables()

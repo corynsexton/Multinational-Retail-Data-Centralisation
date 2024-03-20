@@ -15,7 +15,7 @@ class DataExtractor():
     def __init__(self):
         self.engine = db_connector.init_db_engine()
        
-       
+
     # EXTRACT DATABASE TABLE TO A PANDAS DATAFRAME
     def read_rds_table(self, table_name):
         self.df_table_name = pd.read_sql_table(f"{table_name}", self.engine)
@@ -91,7 +91,6 @@ class DataExtractor():
             df_s3_data = pd.read_json(response['Body'])
         
         return df_s3_data
-
 
 
 db_extractor = DataExtractor()
