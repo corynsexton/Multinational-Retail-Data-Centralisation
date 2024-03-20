@@ -1,12 +1,17 @@
 # Multinational Data Centralisation Project
 
 ## Table of Contents
-[1. Introduction](#Introduction)
-[2. Database Connection](#Database-Connection)
-[3. Data Extraction](#Data-Extraction)
-[4. Data Cleaning](#Data-Cleaning)
-[5. Star Schema](#Star-Schema)
-[6. Data Analysis - SQL Queries](#Data-Analysis)
+[1. Introduction](#introduction)
+
+[2. Database Connection](#database-connection)
+
+[3. Data Extraction](#data-extraction)
+
+[4. Data Cleaning](#data-cleaning)
+
+[5. Star Schema](#star-schema) 
+
+[6. Data Analysis - SQL Queries](#data-analysis)
 ____
 ## 1. Introduction
 Imagine you are part of a multinational retail company that sells goods across the globe.
@@ -105,15 +110,16 @@ I then converted the data into a Pandas Dataframe and our card data is now ready
 <img width="1110" alt="card_detail_results" src="https://github.com/corynsexton/Multinational-Retail-Data-Centralisation/assets/117574774/c3214e68-607b-4254-8791-cee5b3b3d0b6">
 
 #### API
-To get the store data, I need to extract it through an API. First, I must connect to the API and so my method takes in two arguments - an endpoint and a header dictionary. The API key will be the header dictionary.
+To get the store data, I need to extract it through an API. First, I must connect to the API and so my method requires two things - an endpoint and a header dictionary. The API key will be the header dictionary which I have saved in a `.yaml` file and uploaded to `gitignore`.
 
 Before extracting the data, I created a method called `list_number_of_stores()` to find out how many stores the API can provide data for.
 This uses the `get()` method within the `requests` module and `loads()` method within `json`.
 
-<img width="1212" alt="list_number_of_stores" src="https://github.com/corynsexton/Multinational-Retail-Data-Centralisation/assets/117574774/fa8a7670-5bd5-4a6d-be5e-b4ff7a55e164">
+<img width="1249" alt="list_number_of_stores" src="https://github.com/corynsexton/Multinational-Retail-Data-Centralisation/assets/117574774/a2cd0cc3-8b27-4623-b730-e2fa8c23fa81">
 
 The result was 451 which told me that there are 451 stores that I can extract data for. I then fed this information into my next method which will return all 451 stores' data as one pandas dataframe. I have called this method `retrieve_stores_data()`.
-<img width="1203" alt="retrieve_stores_data" src="https://github.com/corynsexton/Multinational-Retail-Data-Centralisation/assets/117574774/2a52a434-85f9-443f-b38a-0965fb20c9c2">
+
+<img width="1219" alt="retrieve_stores_data" src="https://github.com/corynsexton/Multinational-Retail-Data-Centralisation/assets/117574774/a7c47c3f-80ce-4071-b279-51db3d55b875">
 
 As you can see above, I created an empty list `[]` in order for the stores' data to be stored as the method runs through each one individually.
 
