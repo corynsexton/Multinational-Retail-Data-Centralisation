@@ -15,11 +15,13 @@ class DataExtractor():
     def __init__(self):
         self.engine = db_connector.init_db_engine()
        
+       
     # EXTRACT DATABASE TABLE TO A PANDAS DATAFRAME
     def read_rds_table(self, table_name):
         self.df_table_name = pd.read_sql_table(f"{table_name}", self.engine)
         
         return self.df_table_name
+
 
     # TAKE IN LINK AS ARGUMENT AND RETUN A PANDAS DATAFRAME
     def retrieve_pdf_data(self, 
@@ -29,6 +31,7 @@ class DataExtractor():
         
         return card_details
     
+
     # RETRIEVES NUMBER OF STORES FROM API - 451 RESULT
     def list_number_of_stores(self,
                            endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'):
@@ -41,6 +44,7 @@ class DataExtractor():
         store_number = store_number['number_stores']            # RETRIEVES ONLY NUMBER OF STORES
 
         return store_number
+
 
     # # RETRIEVES STORE DATA FROM LIST OF STORES
     def retrieve_stores_data(self,
